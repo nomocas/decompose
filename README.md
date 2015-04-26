@@ -10,9 +10,9 @@ It is :
 - fast
 - chainable
 - lazzy (re)compiled
-- deep.ocm compliant
-- working browser and server side
 - easily customisable
+- working browser and server side
+- deep.ocm compliant
 
 It take benefits from Promise pipelining pattern by :
 
@@ -205,15 +205,13 @@ var func = decompose(function(arg1, arg2){
 	return arg + " - after";
 });
 
-
 var result = func("hello", "world"); // hello - world - after
 
 ```
 
-Except in two cases :
+__Except in two cases :__
 
 #### return undefined (or return omission)
-
 
 When you omit to return something (or you return undefined which is the same result) in a composed function, the arguments are kept and reinjected into next function.
 
