@@ -1,0 +1,37 @@
+{
+  "name": "decompose",
+  "version": "0.1.0",
+  "description": "Javascript functions compositions tools",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nomocas/decompose.git"
+  },
+  "keywords": [
+    "functions",
+    "composition",
+    "js",
+    "AOP"
+  ],
+  "author": "Gilles Coomans <gilles.coomans@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nomocas/decompose/issues"
+  },
+  "homepage": "https://github.com/nomocas/decompose",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "chai": "^2.2.0",
+    "gulp-uglifyjs": "^0.6.1",
+    "gulp-live-server": "0.0.14",
+    "gulp-jshint": "^1.10.0",
+    "jshint-stylish": "^1.0.1",
+    "gulp-rename": "^1.2.2"
+  }
+}

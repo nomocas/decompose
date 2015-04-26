@@ -1,0 +1,30 @@
+{
+  "name": "decompose",
+  "main": "index.js",
+  "version": "0.1.0",
+  "authors": [
+    "Gilles Coomans <gilles.coomans@gmail.com>"
+  ],
+  "description": "Javascript functions compositions tools",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "functions",
+    "composition",
+    "AOP",
+    "js"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/nomocas/decompose",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "statics/libs/",
+    "test",
+    "tests"
+  ]
+}
