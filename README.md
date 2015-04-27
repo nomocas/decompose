@@ -9,7 +9,7 @@ It is :
 - lightweight (3.6 Ko minified, 1.2 Ko minified/gzipped) 
 - fast
 - chainable
-- lazzy (re)compiled
+- lazzy (re)compiled with compilation cache
 - easily customisable
 - working browser and server side
 - deep.ocm compliant
@@ -22,6 +22,23 @@ It take benefits from Promise pipelining pattern by :
 Inspired from https://github.com/kriszyp/compose aspect's decorators.
 Extracted from [deepjs](https://github.com/deepjs/deepjs) core lib.
 
+## Install
+
+```
+> git clone https://github.com/nomocas/decompose.git
+```
+
+or
+
+```
+> npm install decompose
+```
+
+or 
+
+```
+> bower install decompose
+```
 
 ## Examples
 
@@ -254,7 +271,7 @@ func(myObject1, myObject2);
 
 ```
 
-It has the drawback that there is no way to force to return undefined for the moment if any of composed functions return something.
+It has the drawback that there is no way to force undefined return (for the moment) if any composed functions return something.
 
 #### force multiple arguments
 
@@ -273,20 +290,142 @@ var result = func("bananas"); // bananas & apples x 12
 
 ### As Aspects
 
-#### compile
+Until now, every previous example was wrapping a first function with others (with after, before, around or fail).
+In that case, the returned composition is fulfilled and it could not be used anymore as relevant function model/aspects.
 
-#### up
+So. First, when you start a (de)composition with no arguments, you also obtain an absolutly standard and callable js function :
 
-#### bottom
+```javascript
+var func = decompose() // No base function
+.after(function(arg){
+	return "hello " + arg;
+})
+.before(function(arg){
+	return arg[0].toUpperCase() + arg.substring(1);
+});
+
+var result = func("world"); // return "hello World"
+```
+
+It allow you to :
+
+- use it as this (as above)
+- fulfill it later
+- or to use it as model/aspect for other functions/compositions
+
+So, what does all this mean...
+
+
+
+
+
+#### decompose.compile()
+
+Merge, from left to right, bunch of functions together (and so compositions because compositions are standard functions) and return the result function without modifying any of provided compositions.
+
+```javascript
+var aFunctionAspect = decompose()
+.around(function(sup){
+	return function(arg){
+		return sup.call(this, arg + " be Good.").toLowerCase();
+	};
+}); 
+
+var anotherAspect = decompose()
+.after(function(arg){ 
+	return "<b>" + arg + "</b>";
+});
+
+var aFunction = function(arg){
+	return "Hello " + arg; 
+};
+
+var resultFunction = decompose.compile(aFunction, aFunctionAspect, anotherAspect);
+
+var r = resultFunction("Johnny"); // return "<b>hello johnny be good.</b>"
+```
+
+#### decompose.up()
+
+Same thing but modify the first argument.
+
+```javascript
+var aFunctionAspect = decompose()
+.around(function(sup){
+	return function(arg){
+		return sup.call(this, arg + " be Good.").toLowerCase();
+	};
+});
+
+var anotherAspect = decompose()
+.after(function(arg){ 
+	return "<b>" + arg + "</b>";
+});
+
+// note the difference
+decompose.up(aFunctionAspect, anotherAspect);
+
+var r = aFunctionAspect("Johnny"); // return "<b>johnny be good.</b>"
+```
+
+#### decompose.bottom()
+
+Same thing but modify the last argument.
+
+```javascript
+var aFunctionAspect = decompose()
+.around(function(sup){
+	return function(arg){
+		return sup.call(this, arg + " be Good.").toLowerCase();
+	};
+});
+
+var anotherAspect = decompose()
+.after(function(arg){ 
+	return "<b>" + arg + "</b>";
+});
+
+// note the difference
+decompose.bottom(aFunctionAspect, anotherAspect);
+
+var r = anotherAspect("Johnny"); // return "<b>johnny be good.</b>"
+```
 
 ### Custom Composer
 
-log/debug/wrap
+You could extend decompose API by creating a `decompose.Composer` this way : 
+
+```javascript
+var myComposer = decompose.Composer({
+	// additional API to allow on compositions
+	foo: function(arg){
+		return this.before(function(arg){
+			return arg[0].toUpperCase() + arg.substring(1);
+		})
+		.after(function(arg){
+			return "hello " + arg;
+		});
+	}
+});
+
+var func = myComposer(function(arg){
+	return arg + " Doe";
+})
+.foo()
+.after(function(arg){
+	return "<b>" + arg + "</b>";
+});
+
+var result = func("john"); // return "<b>hello John Doe</b>"
+```
 
 ### Promise compliance
 
+You could return any Promise/Thenable from within composed functions, decompose will wait resolution/rejection before injecting result in next handler (or error in first fail in stack).
+
 ### deep-ocm compliance
-it check the _deep_ocm_ boilerplate on composed functions and resolve it before each usage. if ocm return null : skip function.
+
+It check any _deep_ocm_ flag (deep-ocm boilerplate) on composed functions, and resolve it before each usage. if ocm return null : skip function.
 
 ### Advanced usage
 
@@ -300,7 +439,7 @@ You need to have mocha installed globally before launching test.
 ```
 > npm install -g mocha
 ```
-Do not forget to install dev-dependencies from 'decompose' folder :
+Do not forget to install dev-dependencies. i.e. : from 'decompose' folder, type :
 ```
 > npm install
 ```
