@@ -1,17 +1,9 @@
 var gulp = require('gulp'),
     gls = require('gulp-live-server'),
-    jshint = require('gulp-jshint'),
-    stylish = require('jshint-stylish'),
     uglify = require('gulp-uglifyjs'),
     rename = require("gulp-rename");
 //___________________________________________________
-gulp.task('default', ['jslint']);
-//___________________________________________________
-gulp.task('jslint', function() {
-    gulp.src('./index.js')
-        .pipe(jshint())
-        .pipe(jshint.reporter(stylish));
-});
+gulp.task('default', ['uglify']);
 //___________________________________________________
 gulp.task('serve-test', function() {
     var server = gls.static("./test", 8287);
