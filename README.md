@@ -14,7 +14,7 @@ It is :
 - working browser and server side
 - deep.ocm compliant
 
-It take benefits from Promise pipelining pattern by :
+It takes benefits from Promise pipelining pattern by :
 
 - gathering function decorator aspects semantic (before, around, after) and Promise specific keywords (done, fail, always).
 - managing transparently any promise/thenable returned from composed functions
@@ -248,7 +248,7 @@ func(myObject);
 
 ```
 
-It work even with multiple arguments :
+It works even with multiple arguments :
 
 ```javascript
 
