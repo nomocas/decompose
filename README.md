@@ -290,7 +290,7 @@ it check the _deep_ocm_ boilerplate on composed functions and resolve it before 
 
 ### Advanced usage
 
-	#### Hand Compilation
+#### Hand Compilation
 
 ## Tests
 
