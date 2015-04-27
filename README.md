@@ -231,7 +231,7 @@ func(myObject);
 
 ```
 
-It work even with multiple arguments :
+It works even with multiple arguments :
 
 ```javascript
 
