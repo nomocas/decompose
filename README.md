@@ -315,10 +315,6 @@ It allow you to :
 
 So, what does all this mean...
 
-
-
-
-
 #### decompose.compile()
 
 Merge, from left to right, bunch of functions together (and so compositions because compositions are standard functions) and return the result function without modifying any of provided compositions.
