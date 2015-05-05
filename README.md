@@ -306,18 +306,17 @@ var func = decompose() // No base function
 
 var result = func("world"); // return "hello World"
 ```
-
 It allow you to :
 
 - use it as this (as above)
 - fulfill it later
-- or to use it as model/aspect for other functions/compositions
+- use it as model/aspect for other functions/compositions
 
 So, what does all this mean...
 
 #### decompose.compile()
 
-Merge, from left to right, bunch of functions together (and so compositions because compositions are standard functions) and return the result function without modifying any of provided compositions.
+Merge (wire), from left to right, bunch of functions together (and so compositions because compositions are standard functions) and return the result function __without modifying__ any of provided compositions.
 
 ```javascript
 var aFunctionAspect = decompose()
@@ -336,14 +335,15 @@ var aFunction = function(arg){
 	return "Hello " + arg; 
 };
 
-var resultFunction = decompose.compile(aFunction, aFunctionAspect, anotherAspect);
+var resultFunction = decompose.compile(aFunction, aFunctionAspect, anotherAspect); // as first argument is a function : resultFunction is fulfilled.
 
 var r = resultFunction("Johnny"); // return "<b>hello johnny be good.</b>"
 ```
 
-#### decompose.up()
+#### decompose.up(arg1, arg2[, ...])
 
-Same thing but modify the first argument.
+Same thing but modify the first argument if it's a (de)composition.
+Or if first argument is simple function (i.e. not a (de)composition), return new fulfilled composition.
 
 ```javascript
 var aFunctionAspect = decompose()
@@ -364,9 +364,9 @@ decompose.up(aFunctionAspect, anotherAspect);
 var r = aFunctionAspect("Johnny"); // return "<b>johnny be good.</b>"
 ```
 
-#### decompose.bottom()
+#### decompose.bottom(arg1, arg2[, ...])
 
-Same thing but modify the last argument.
+Same thing but modify the ___last___ argument.
 
 ```javascript
 var aFunctionAspect = decompose()
@@ -389,7 +389,7 @@ var r = anotherAspect("Johnny"); // return "<b>johnny be good.</b>"
 
 ### Custom Composer
 
-You could extend decompose API by creating a `decompose.Composer` this way : 
+You could define your own extension of decompose API by creating a `Composer` this way : 
 
 ```javascript
 var myComposer = decompose.Composer({
@@ -419,9 +419,51 @@ var result = func("john"); // return "<b>hello John Doe</b>"
 
 You could return any Promise/Thenable from within composed functions, decompose will wait resolution/rejection before injecting result in next handler (or error in first fail in stack).
 
+Example with request-promise (a simple nodejs http client that return a promise) : 
+
+```javascript
+var request = require("request-promise"); // npm i request-promise
+
+var func = decompose(function(path){
+	return request.get(path);
+})
+.after(function(loadedValue){
+	return "<b>" + loadedValue + "</b>";
+});
+
+func("/my/path/to/file.json");
+```
+
+Note : it's equivalent to this : 
+```javascript
+var request = require("request-promise");
+
+var func = decompose(request.get)
+.after(function(loadedValue){
+	return "<b>" + loadedValue + "</b>";
+});
+
+func("/my/path/to/file.json");
+```
+
+or this :
+```javascript
+var request = require("request-promise");
+
+var func = decompose(function(loadedValue){
+	return "<b>" + loadedValue + "</b>";
+})
+.before(request.get);
+
+func("/my/path/to/file.json");
+```
+
 ### deep-ocm compliance
 
 It check any _deep_ocm_ flag (deep-ocm boilerplate) on composed functions, and resolve it before each usage. if ocm return null : skip function.
+
+
+
 
 ### Advanced usage
 
