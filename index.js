@@ -245,9 +245,10 @@
 		};
 
 		decompose.up = function() {
-			var args = Array.prototype.slice.call(arguments);
-			if (!args[args.length - 1].__composition__)
-				return args[args.length - 1];
+			var args = Array.prototype.slice.call(arguments),
+				lastArg = args[args.length - 1];
+			if (!lastArg.__composition__)
+				return lastArg;
 			var bck = args.shift();
 			if (bck.__composition__) {
 				for (var i = 0, len = args.length; i < len; ++i)
