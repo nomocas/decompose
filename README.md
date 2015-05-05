@@ -462,6 +462,38 @@ func("/my/path/to/file.json");
 
 It check any _deep_ocm_ flag (deep-ocm boilerplate) on composed functions, and resolve it before each usage. if ocm return null : skip function.
 
+```javascript
+
+var deep = require("deepjs/deep");
+
+var myOcm = deep.ocm({
+	admin:function(arg){
+		// do something when admin
+		return arg / 2;
+	},
+	registred:function(arg){
+		// do something when registred user
+		return arg + 5;
+	},
+	"public":null
+}, { sensibleTo:["roles"] });
+
+
+var func = decompose(function(arg){
+	return arg + 10;
+})
+.after(myOcm);
+
+deep.Modes("roles", "admin");
+func(4); // return 7
+
+deep.Modes("roles", "registred");
+func(4); // return 19
+
+deep.Modes("roles", "public");
+func(4); // return 14
+
+```
 
 
 
