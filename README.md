@@ -495,11 +495,34 @@ func(4); // return 14
 
 ```
 
-
-
 ### Advanced usage
 
+You should know that produced function is internaly compiled (forged) lazzily, and cached, on first call.
+Next calls will use cached function directly.
+Each time you modify the composition, the cached (forged) function is cleared and will be re-compiled on next call.
+
 #### Hand Compilation
+
+If you want to force compilation and obtain the forged function directly (which is not a (de)composition anymore - i.e. no more chaining are allowed), simply invoke myComposition._compile();
+
+```javascript
+
+var compo = decompose(function(){
+	// do something
+})
+.after(function(){
+	// do something else
+});
+
+var forgedFunction = compo._compile();
+
+// allowed :
+forgedFunction();
+
+// not allowed anymore :
+forgedFunction.after(/*...*/);
+
+```
 
 ## Tests
 
