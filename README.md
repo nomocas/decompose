@@ -1,5 +1,7 @@
 # decompose
 
+Extracted from [deepjs](https://github.com/deepjs/deepjs) core lib.
+
 ## Javascript Functions/Aspects Forge.
 
 Functions/Aspects (de)composition tools which produce standard functions usable anywhere in your js.
@@ -20,7 +22,6 @@ It takes benefits from Promise pipelining pattern by :
 - managing transparently any promise/thenable returned from composed functions
 
 Inspired from https://github.com/kriszyp/compose aspect's decorators.
-Extracted from [deepjs](https://github.com/deepjs/deepjs) core lib.
 
 ## Install
 
@@ -292,6 +293,7 @@ var result = func("bananas"); // bananas & apples x 12
 
 Until now, every previous example was wrapping a first function with others (with after, before, around or fail).
 In that case, the returned composition is fulfilled and it could not be used anymore as relevant function model/aspects.
+You could always add chained methods (after, before, ...) on it, but as it wraps a function at bottom of its stack, it could not be used as model anymore.
 
 So. First, when you start a (de)composition with no arguments, you also obtain an absolutly standard and callable js function :
 
@@ -313,6 +315,36 @@ It allow you to :
 - use it as model/aspect for other functions/compositions
 
 So, what does all this mean...
+
+The idea is to manage inheritance and specialisation by having functions in objects/prototypes that could be applied together.
+
+```javascript
+var obj = {
+	test: decompose().after(function(arg){
+		// do something
+		return "hello " + arg;
+	})
+};
+// obj.test is callable and work as a standard function
+
+var obj2 = {
+	test: function(arg){
+		// do something else
+		return arg + " world";
+	}
+};
+
+// both obj and obj2 are workable instance. but as obj contains (de)composition, it could be used as model for other objects.
+
+// extends obj2 with obj (if you want tools that do that for you (and manymore) you could use deep-compiler)
+for(var i in obj)
+	if(obj2[i])
+		obj2[i] = decompose.compile(obj2[i], obj[i]);
+
+
+obj2.test("composition"); // return "hello composition world"
+```
+
 
 #### decompose.compile()
 
