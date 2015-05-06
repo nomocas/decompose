@@ -231,7 +231,7 @@ Sugar for `.after(fn).fail(fn)`
 
 Alias for `.after(fn)`
 
-Just there to be compliant with Promise API. It helps to use directly Promise API in composer. (see customisation)
+Just there to be compliant with Promise API. It helps to use directly Promise API in composer. (see [customisation](#custom-composer))
 
 ### Arguments management
 
