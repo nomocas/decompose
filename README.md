@@ -68,53 +68,53 @@ Window global :
 
 ###  before + base + after
 ```javascript
-	var compose = require("decompose");
-	
-	var myFunc = compose(function(msg){
-		return msg.toLowerCase();
-	})
-	.before(function(msg){
-		return "YOU SAY : " + msg;
-	})
-	.after(function(msg){
-		return "<b>" + msg + "</b>";
-	});
+var compose = require("decompose");
 
-	var result = myFunc("HELLO WORLD"); // return :<b>you say : hello world</b>
+var myFunc = compose(function(msg){
+	return msg.toLowerCase();
+})
+.before(function(msg){
+	return "YOU SAY : " + msg;
+})
+.after(function(msg){
+	return "<b>" + msg + "</b>";
+});
+
+var result = myFunc("HELLO WORLD"); // return :<b>you say : hello world</b>
 ```
 
 ### around + before + promise + fail
 ```javascript
-	var compose = require("decompose"),
-		request = require("request-promise"); // promise based http.request (npm i request-promise)
-	
-	var myFunc = compose(function(info){
-		return {
-			title:"hello world",
-			info: info
-		};
-	})
-	.around(function(sup){
-		return function(info){
-			info.something = true;
-			var result = sup.call(this, info); // return { title:"hello world", info:{ ... } }
-			result.decorated = true;
-			return result;
-		};
-	})
-	.before(function(path){
-		return request(path);   // return a promise that will be resolved with loaded object.
-		// resolved object will be injected as argument in next composed function.
-	})
-	.fail(function(error){
-		// error is : any error throwned or returned (or injected from a promise) by a previously composed function.
-		// think about promise pattern.
-	});
-	
-	myFunc("/path/to/info.json")
-	.then(function(result){
-		// result = { title:"hello world", info:{...}, decorated:true }
-	});
+var compose = require("decompose"),
+	request = require("request-promise"); // promise based http.request (npm i request-promise)
+
+var myFunc = compose(function(info){
+	return {
+		title:"hello world",
+		info: info
+	};
+})
+.around(function(sup){
+	return function(info){
+		info.something = true;
+		var result = sup.call(this, info); // return { title:"hello world", info:{ ... } }
+		result.decorated = true;
+		return result;
+	};
+})
+.before(function(path){
+	return request(path);   // return a promise that will be resolved with loaded object.
+	// resolved object will be injected as argument in next composed function.
+})
+.fail(function(error){
+	// error is : any error throwned or returned (or injected from a promise) by a previously composed function.
+	// think about promise pattern.
+});
+
+myFunc("/path/to/info.json")
+.then(function(result){
+	// result = { title:"hello world", info:{...}, decorated:true }
+});
 ```
 
 ## API
@@ -410,7 +410,8 @@ var aFunc = function(arg){ return "Hey! " + arg; };
 var bFunc = decompose().after(function(arg){ return "Ho! " + arg; });
 var cFunc = function(arg){ return "Wow! " + arg; };
 
-var func = decompose.compile(aFunc, bFunc, cFunc);  // return cFunc. As cFunc is higher in stack : it hides any lower compo/functions.
+var func = decompose.compile(aFunc, bFunc, cFunc);
+// return cFunc. As cFunc is higher in stack : it hides any lower compo/functions.
 
 func("AOP"); // return "Wow! AOP"
 // only cFunc is fired
@@ -461,7 +462,8 @@ var aFunc = function(arg){ return "Hey! " + arg; };
 var bFunc = decompose().after(function(arg){ return "Ho! " + arg; });
 var cFunc = function(arg){ return "Wow! " + arg; };
 
-var func = decompose.up(aFunc, bFunc, cFunc);  // return cFunc. As cFunc is higher in stack : it hides any lower compo/functions.
+var func = decompose.up(aFunc, bFunc, cFunc);
+// return cFunc. As cFunc is higher in stack : it hides any lower compo/functions.
 
 func("AOP"); // return "Wow! AOP"
 // only cFunc is fired
@@ -536,7 +538,8 @@ var aFunc = function(arg){ return "Hey! " + arg; };
 var bFunc = decompose().after(function(arg){ return "Ho! " + arg; });
 var cFunc = function(arg){ return "Wow! " + arg; };
 
-var func = decompose.bottom(aFunc, bFunc, cFunc);  // return cFunc. As cFunc is higher in stack : it hides any lower compo/functions.
+var func = decompose.bottom(aFunc, bFunc, cFunc);  
+// return cFunc. As cFunc is higher in stack : it hides any lower compo/functions.
 
 func("AOP"); // return "Wow! AOP"
 // only cFunc is fired
