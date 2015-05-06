@@ -978,6 +978,77 @@ describe("compile", function() {
 			expect(res).to.equal("zoo-before-alone-after");
 		});
 	});
+	describe("extendsObjectWithObject 1", function() {
+
+		var obj = {
+			test: decompose().after(function(arg) {
+				// do something
+				return "hello " + arg;
+			})
+		};
+		// obj.test is callable and work as a standard function
+
+		var obj2 = {
+			test: function(arg) {
+				// do something else
+				return arg + " world";
+			}
+		};
+
+		// both obj and obj2 are workable instance. But as obj contains (de)composition, it could be used as model for other objects.
+		function extendsObjectWithObject(object, model) {
+			// (if you want tools that do that nicely for you (and manymore) you should try deep-compiler)
+			for (var i in model)
+				object[i] = decompose.up(object[i], model[i]);
+		}
+
+		extendsObjectWithObject(obj2, obj);
+
+		var r1 = obj.test("composition"); // return "hello composition"
+		var r2 = obj2.test("composition"); // return "hello composition world"
+		it("should", function() {
+			expect(r1).to.equal("hello composition");
+			expect(r2).to.equal("hello composition world");
+		});
+	});
+	describe("extendsObjectWithObject 2", function() {
+
+		var obj = {
+			test: decompose().after(function(arg) {
+				// do something
+				return "hello " + arg;
+			}),
+			bloupi: decompose().before(function(arg) {
+				return arg + " rocks!"
+			})
+		};
+		// obj.test is callable and work as a standard function
+
+		var obj2 = {
+			test: function(arg) {
+				// do something else
+				return arg + " world";
+			}
+		};
+
+		// both obj and obj2 are workable instance. But as obj contains (de)composition, it could be used as model for other objects.
+		function extendsObjectWithObject(object, model) {
+			// (if you want tools that do that nicely for you (and manymore) you should try deep-compiler)
+			for (var i in model)
+				object[i] = decompose.up(object[i], model[i]);
+		}
+
+		extendsObjectWithObject(obj2, obj);
+
+		var r1 = obj.test("composition"); // return "hello composition"
+		var r2 = obj2.test("composition"); // return "hello composition world"
+		var r3 = obj2.bloupi("composition"); // return "composition rocks!"
+		it("should", function() {
+			expect(r1).to.equal("hello composition");
+			expect(r2).to.equal("hello composition world");
+			expect(r3).to.equal("composition rocks!");
+		});
+	});
 });
 
 
