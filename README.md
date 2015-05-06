@@ -299,7 +299,7 @@ It has the drawback that there is no way to force undefined return (for the mome
 
 #### force multiple arguments
 
-When you want to force multiple arguments, simply return a `decompose.Arguments([arg1, arg2, ...])` :
+When you want to force multiple arguments, simply return `decompose.Arguments([arg1, arg2, ...])` :
 
 ```javascript 
 var func = decompose(function(arg1, arg2){
@@ -332,47 +332,53 @@ var func = decompose() // No base function
 
 var result = func("world"); // return "hello World"
 ```
+
 It allow you to :
 
 - use it as this (as above)
-- fulfill it later
+- fulfill it later (see further)
 - use it as model/aspect for other functions/compositions
 
-So, what does all this mean...
-
-The idea is to manage inheritance and specialisation by having functions in objects/prototypes that could be applied together.
+The idea is to allow inheritance and specialisation management by having functions in objects/prototypes that could be applied together.
 
 ```javascript
 var obj = {
-	test: decompose().after(function(arg){
+	foo: decompose().after(function(arg){
 		// do something
 		return "hello " + arg;
+	}),
+	bar: decompose().before(function(arg) {
+		return arg + " rocks!"
 	})
 };
-// obj.test is callable and work as a standard function
+// obj.foo and obj.bar are callable and work as a standard functions
 
 var obj2 = {
-	test: function(arg){
+	foo: function(arg){
 		// do something else
 		return arg + " world";
 	}
 };
 
-// both obj and obj2 are workable instance. but as obj contains (de)composition, it could be used as model for other objects.
+// both obj and obj2 are workable instance.
+// But as obj contains (de)compositions, it could be used as model for other objects.
+function extendsObjectWithObject(object, model){
+	// (if you want tools that do that nicely for you (and manymore) you should try deep-compiler)
+	for(var i in model)
+		object[i] = decompose.up(object[i], model[i]);
+}
 
-// extends obj2 with obj (if you want tools that do that for you (and manymore) you could use deep-compiler)
-for(var i in obj)
-	if(obj2[i])
-		obj2[i] = decompose.compile(obj2[i], obj[i]);
+extendsObjectWithObject(obj2, obj);  // of course you could do it with prototypes... ;)
 
-
-obj2.test("composition"); // return "hello composition world"
+obj.foo("composition");  // return "hello composition"
+obj2.foo("composition"); // return "hello composition world"
+obj2.bar("composition"); // return "composition rocks!"
 ```
 
 
-#### decompose.compile()
+#### decompose.compile(arg1, arg2[, ...])
 
-Merge (wire), from left to right, bunch of functions together (and so compositions because compositions are standard functions) and return the result function __without modifying__ any of provided compositions.
+Merge (wire), from left to right, bunch of functions/compositions together and return the result function __without modifying__ any of provided compositions.
 
 ```javascript
 var aFunctionAspect = decompose()
@@ -391,10 +397,40 @@ var aFunction = function(arg){
 	return "Hello " + arg; 
 };
 
-var resultFunction = decompose.compile(aFunction, aFunctionAspect, anotherAspect); // as first argument is a function : resultFunction is fulfilled.
+var resultFunction = decompose.compile(aFunction, aFunctionAspect, anotherAspect); 
+// as first argument is a function : resultFunction is fulfilled.
 
 var r = resultFunction("Johnny"); // return "<b>hello johnny be good.</b>"
 ```
+
+Note : when you introduce a pure function (not a composition) higher in "compilation" arguments list (either by providing it as argument of 'decompose' or by merge), it will hide any other function/composition lower in list.
+
+```javascript
+var aFunc = function(arg){ return "Hey! " + arg; };
+var bFunc = decompose().after(function(arg){ return "Ho! " + arg; });
+var cFunc = function(arg){ return "Wow! " + arg; };
+
+var func = decompose.compile(aFunc, bFunc, cFunc);  // return cFunc. As cFunc is higher in stack : it hides any lower compo/functions.
+
+func("AOP"); // return "Wow! AOP"
+// only cFunc is fired
+```
+
+```javascript
+var compo = decompose(function(arg){
+	return arg + " world";
+}).after(function(arg){
+	return arg + " rules!";
+});
+
+var aFunc = function(arg){ return "Hey! " + arg; };
+
+var func = decompose.compile(aFunc, compo);
+
+func("AOP"); // "AOP world rules!"
+// aFunc has been ignored
+```
+
 
 #### decompose.up(arg1, arg2[, ...])
 
@@ -420,6 +456,58 @@ decompose.up(aFunctionAspect, anotherAspect);
 var r = aFunctionAspect("Johnny"); // return "<b>johnny be good.</b>"
 ```
 
+```javascript
+var aFunc = function(arg){ return "Hey! " + arg; };
+var bFunc = decompose().after(function(arg){ return "Ho! " + arg; });
+var cFunc = function(arg){ return "Wow! " + arg; };
+
+var func = decompose.up(aFunc, bFunc, cFunc);  // return cFunc. As cFunc is higher in stack : it hides any lower compo/functions.
+
+func("AOP"); // return "Wow! AOP"
+// only cFunc is fired
+```
+
+```javascript
+var compo = decompose().after(function(arg){
+	return arg + " rules!";
+});
+
+var aFunc = function(arg){ return "Hey! " + arg; };
+var bFunc = function(arg){ return "Wow! " + arg; };
+
+// return a clone of compo that is fulfilled with bFunc. aFunc is ignored.
+var func = decompose.up(aFunc, bFunc, compo); 
+
+func("AOP"); // "Wow! AOP rules!"
+// aFunc has been ignored
+```
+Note as result is a 'fulfilled' composition, you could always add chained methods (after, before, ...), but it could not be used anymore as model.
+
+```javascript
+var compo = decompose().after(function(arg){
+	return arg + " rules!";
+});
+var aFunc = function(arg){ return "Wow! " + arg; };
+
+// return a clone of compo that is fulfilled with aFunc.
+var func = decompose.up(aFunc, compo); 
+
+func("AOP"); // "Wow! AOP rules!"
+
+func.after(function(arg){
+	return "{ " + arg + " }"; 
+});
+
+var bFunc = function(arg){ return arg + " anything."; };
+
+var func2 = decompose.up(bFunc, func);
+
+func2("AOP") // "{ Wow! AOP rules! }"
+// => bFunc has been ignored
+
+```
+
+
 #### decompose.bottom(arg1, arg2[, ...])
 
 Same thing but modify the ___last___ argument.
@@ -442,6 +530,58 @@ decompose.bottom(aFunctionAspect, anotherAspect);
 
 var r = anotherAspect("Johnny"); // return "<b>johnny be good.</b>"
 ```
+
+```javascript
+var aFunc = function(arg){ return "Hey! " + arg; };
+var bFunc = decompose().after(function(arg){ return "Ho! " + arg; });
+var cFunc = function(arg){ return "Wow! " + arg; };
+
+var func = decompose.bottom(aFunc, bFunc, cFunc);  // return cFunc. As cFunc is higher in stack : it hides any lower compo/functions.
+
+func("AOP"); // return "Wow! AOP"
+// only cFunc is fired
+```
+
+```javascript
+var compo = decompose().after(function(arg){
+	return arg + " rules!";
+});
+
+var aFunc = function(arg){ return "Hey! " + arg; };
+var bFunc = function(arg){ return "Wow! " + arg; };
+
+// return compo (not a clone) that is fulfilled with bFunc. aFunc is ignored.
+decompose.bottom(aFunc, bFunc, compo); 
+
+compo("AOP"); // "Wow! AOP rules!"
+// aFunc has been ignored
+```
+Note as result is a 'fulfilled' composition, you could always add chained methods (after, before, ...), but it could not be used anymore as model.
+
+```javascript
+var compo = decompose().after(function(arg){
+	return arg + " rules!";
+});
+var aFunc = function(arg){ return "Wow! " + arg; };
+
+// return a clone of compo that is fulfilled with aFunc.
+decompose.bottom(aFunc, compo); 
+
+compo("AOP"); // "Wow! AOP rules!"
+
+compo.after(function(arg){
+	return "{ " + arg + " }"; 
+});
+
+var bFunc = function(arg){ return arg + " anything."; };
+
+var func2 = decompose.bottom(bFunc, compo);
+
+func2("AOP") // "{ Wow! AOP rules! }"
+// => bFunc has been ignored
+
+```
+
 
 ### Custom Composer
 
