@@ -4,7 +4,8 @@ Extracted from [deepjs](https://github.com/deepjs/deepjs) core lib.
 
 ## Javascript Functions/Aspects Forge.
 
-Functions/Aspects (de)composition tools which produce standard functions usable anywhere in your js.
+Functions/Aspects (de)composition tools which produce standard functions
+usable anywhere in your js.
 
 It is :
 
