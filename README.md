@@ -46,11 +46,8 @@ or
 
 You could either use it as an AMD module (requirejs, almond, ...) in your browser, or as a CommonJS module under nodejs, or by including the file directly in a script tag in your html page (decompose will be accessible in global window).
 
-Requirejs boilerplate : 
+Requirejs : 
 ```javascript 
-if (typeof define !== 'function') {
-    var define = require('amdefine')(module);
-}
 define(["require", "decompose"], function(require, decompose){
 	// do something
 });
@@ -62,7 +59,7 @@ var decompose = require("decompose");
 // do something
 ```
 
-Window global : 
+Window global :
 ```html
 <script src="/path/to/lib/decompose/dist/decompose.min.js"></script>
 ```
