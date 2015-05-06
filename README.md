@@ -4,8 +4,7 @@ Extracted from [deepjs](https://github.com/deepjs/deepjs) core lib.
 
 ## Javascript Functions/Aspects Forge.
 
-Functions/Aspects (de)composition tools which produce standard functions
-usable anywhere in your js.
+Functions/Aspects (de)composition tools which produce standard functions usable anywhere in your js.
 
 It is :
 
@@ -16,6 +15,8 @@ It is :
 - easily customisable
 - working browser and server side
 - deep.ocm compliant
+- absolutly non-obstrusive
+- incredibly powerful
 
 It takes benefits from Promise pipelining pattern by :
 
