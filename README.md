@@ -308,9 +308,10 @@ var func = decompose(function(arg1, arg2){
 .before(function(arg){
 	return decompose.Arguments([arg + " & apples", 12]);
 });
-```
 
 var result = func("bananas"); // bananas & apples x 12
+```
+
 
 ### As Aspects
 
