@@ -53,6 +53,11 @@
 				return this;
 			};
 			composition._up = function(fn) {
+				if (!fn) {
+					if (fn === null)
+						return null;
+					return this
+				}
 				closure.compiled = null;
 				if (!fn.__composition__) {
 					closure.queue = [{
@@ -67,6 +72,8 @@
 			composition._bottom = function(fn) {
 				if (closure.queue[0].type == "fn")
 					return this;
+				if (!fn)
+					return this
 				closure.compiled = null;
 				if (fn.__composition__)
 					closure.queue = fn._queue().concat(closure.queue);
@@ -250,6 +257,8 @@
 			if (!lastArg.__composition__)
 				return lastArg;
 			var bck = args.shift();
+			while (!bck)
+				bck = args.shift();
 			if (bck.__composition__) {
 				for (var i = 0, len = args.length; i < len; ++i)
 					bck._up(args[i]);
