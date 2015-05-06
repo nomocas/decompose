@@ -25,6 +25,27 @@ It takes benefits from Promise pipelining pattern by :
 
 Inspired from https://github.com/kriszyp/compose aspect's decorators.
 
+## Content
+
+- [install](#install)
+- [usage](#usage)
+- [examples](#examples)
+- [API](#api)
+	- [after](#after)
+	- [before](#before)
+	- [around](#around)
+	- [fail](#fail)
+	- [always](#always)
+	- [done](#done)
+- [argument management](#argument-management)
+- [as aspects](#as-aspects)
+- [custom composers](#custom-composer)
+- [Promise compliance](#promise-compliance)
+- [deep-ocm compliance](#deep-ocm-compliance)
+- [advanced usage](#advanced-usage)
+- [tests](#tests)
+
+
 ## Install
 
 ```
