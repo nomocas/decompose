@@ -37,7 +37,7 @@ Inspired from https://github.com/kriszyp/compose aspect's decorators.
 	- [fail](#fail)
 	- [always](#always)
 	- [done](#done)
-- [argument management](#argument-management)
+- [arguments management](#arguments-management)
 - [as aspects](#as-aspects)
 - [custom composers](#custom-composer)
 - [Promise compliance](#promise-compliance)
