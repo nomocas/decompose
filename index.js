@@ -56,7 +56,7 @@
 				if (!fn) {
 					if (fn === null)
 						return null;
-					return this
+					return this;
 				}
 				closure.forged = null;
 				if (!fn.__composition__) {
@@ -73,7 +73,7 @@
 				if (closure.queue[0].type == 'fn')
 					return this;
 				if (!fn)
-					return this
+					return this;
 				closure.forged = null;
 				if (fn.__composition__)
 					closure.queue = fn._queue().concat(closure.queue);
@@ -130,7 +130,7 @@
 				return cmp;
 			};
 			composer.add = function(name, method) {
-				api[name] = method
+				api[name] = method;
 				return this;
 			};
 			return composer;
@@ -200,7 +200,7 @@
 				}
 				return res;
 			}
-		};
+		}
 
 		var forge = function(closure) {
 			var queue = closure.queue;
@@ -269,8 +269,8 @@
 				return bck;
 			}
 			var frg = args.pop()._clone();
-			for (var len = args.length - 1; len >= 0; --len)
-				frg._bottom(args[len]);
+			for (var len2 = args.length - 1; len2 >= 0; --len2)
+				frg._bottom(args[len2]);
 			frg._bottom(bck);
 			return frg;
 		};
