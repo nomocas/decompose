@@ -19,15 +19,15 @@
 				else if (!fn.forEach)
 					closure.queue = [{
 						fn: fn,
-						type: (type || "fn")
+						type: (type || 'fn')
 					}];
 				else
 					closure.queue = fn.slice(); // copy array
 			}
 			var composition = function() {
-				if (!closure.compiled)
-					closure.compiled = compile(closure);
-				return closure.compiled.apply(this, arguments);
+				if (!closure.forged)
+					closure.forged = forge(closure);
+				return closure.forged.apply(this, arguments);
 			};
 
 			composition._deep_compiler_ = true;
@@ -37,18 +37,18 @@
 			composition._clone = function() {
 				return decompose(closure.queue);
 			};
-			composition._compile = function() {
-				if (closure.compiled)
-					return closure.compiled;
-				return compile(closure);
+			composition._forge = function() {
+				if (closure.forged)
+					return closure.forged;
+				return forge(closure);
 			};
 			composition._queue = function(fn, type) {
 				if (!fn)
 					return closure.queue;
-				closure.compiled = null;
+				closure.forged = null;
 				closure.queue.push({
 					fn: fn,
-					type: type || "after"
+					type: type || 'after'
 				});
 				return this;
 			};
@@ -58,11 +58,11 @@
 						return null;
 					return this
 				}
-				closure.compiled = null;
+				closure.forged = null;
 				if (!fn.__composition__) {
 					closure.queue = [{
 						fn: fn,
-						type: "fn"
+						type: 'fn'
 					}];
 					return this;
 				}
@@ -70,17 +70,17 @@
 				return this;
 			};
 			composition._bottom = function(fn) {
-				if (closure.queue[0].type == "fn")
+				if (closure.queue[0].type == 'fn')
 					return this;
 				if (!fn)
 					return this
-				closure.compiled = null;
+				closure.forged = null;
 				if (fn.__composition__)
 					closure.queue = fn._queue().concat(closure.queue);
 				else if (typeof fn === 'function')
 					closure.queue.unshift({
 						fn: fn,
-						type: "fn"
+						type: 'fn'
 					});
 				return this;
 			};
@@ -88,22 +88,22 @@
 
 			//___________________________ "Public" API
 			composition.after = function(fn) {
-				return this._queue(fn, "after");
+				return this._queue(fn, 'after');
 			};
 			composition.before = function(fn) {
-				return this._queue(fn, "before");
+				return this._queue(fn, 'before');
 			};
 			composition.around = function(fn) {
-				return this._queue(fn, "around");
+				return this._queue(fn, 'around');
 			};
 			composition.fail = function(fn) {
-				return this._queue(fn, "fail");
+				return this._queue(fn, 'fail');
 			};
 			composition.done = function(fn) {
-				return this._queue(fn, "after");
+				return this._queue(fn, 'after');
 			};
 			composition.always = function(fn) {
-				return this.after(fn).fail(fn);
+				return this._queue(fn, 'after')._queue(fn, 'fail');
 			};
 			return composition;
 		};
@@ -117,7 +117,6 @@
 
 		/**
 		 * Composer factory
-		 * @param {Object} namespace where to store
 		 * @param {[type]} api       [description]
 		 */
 		decompose.Composer = function(api) {
@@ -137,6 +136,8 @@
 			return composer;
 		};
 
+		//_________________________________________________ Local functions
+
 		var manageAfter = function(r, after, self, args) {
 			if (after._deep_ocm_)
 				after = after();
@@ -148,7 +149,7 @@
 			if (r2 && typeof r2.then === 'function')
 				return r2.then(function(r2) {
 					return (typeof r2 === 'undefined') ? r : r2;
-				})
+				});
 			return (typeof r2 === 'undefined') ? r : r2;
 		};
 
@@ -165,17 +166,18 @@
 					r = before.apply(this, args);
 				if (r instanceof Error)
 					return r;
-				if (r && typeof r.then === 'function') { // promise/thenable signature
+				if (r && typeof r.then === 'function') // promise/thenable signature
 					return r.then(function(r2) {
 						return manageAfter(r2, after, self, args);
 					});
-				}
 				return manageAfter(r, after, self, args);
 			};
 		};
 
 		function fail(oldOne, self, args, fn) {
 			var res = null;
+			if (fn._deep_ocm_)
+				fn = fn();
 			try {
 				res = oldOne.apply(self, args); // oldOne could return an error or not
 			} catch (error) { // or oldOne coud throw something
@@ -200,33 +202,33 @@
 			}
 		};
 
-		var compile = function(closure) {
+		var forge = function(closure) {
 			var queue = closure.queue;
 			if (!queue.length)
 				return function() {};
-			if (queue[0].type === "around")
+			if (queue[0].type === 'around')
 				throw new Error("composition starting with 'around' : could not be compiled. aborting.");
 			var func = null,
 				len = queue.length;
 			queue.forEach(function(descriptor) {
 				var oldOne = null;
 				switch (descriptor.type) {
-					case "fn":
+					case 'fn':
 						func = descriptor.fn;
 						break;
-					case "after":
+					case 'after':
 						if (func)
 							func = chain(func, descriptor.fn, closure);
 						else
 							func = descriptor.fn;
 						break;
-					case "before":
+					case 'before':
 						if (func)
 							func = chain(descriptor.fn, func, closure);
 						else
 							func = descriptor.fn;
 						break;
-					case "around":
+					case 'around':
 						oldOne = func;
 						func = function() {
 							var wrapper = descriptor.fn(oldOne);
@@ -235,7 +237,7 @@
 							return wrapper.apply(this, arguments);
 						};
 						break;
-					case "fail":
+					case 'fail':
 						oldOne = func;
 						func = function() {
 							if (!oldOne)
@@ -247,9 +249,11 @@
 						throw new Error("composition unrecognised : " + descriptor.type);
 				}
 			});
-			closure.compiled = func;
+			closure.forged = func;
 			return func;
 		};
+
+		//_______________________________________________________ MERGER
 
 		decompose.up = function() {
 			var args = Array.prototype.slice.call(arguments),
@@ -293,8 +297,8 @@
 
 		return decompose;
 	});
-})(typeof define != "undefined" ? define : function(deps, factory) { // AMD/RequireJS format if available
-	if (typeof module != "undefined")
+})(typeof define !== 'undefined' ? define : function(deps, factory) { // AMD/RequireJS format if available
+	if (typeof module !== 'undefined')
 		module.exports = factory(); // CommonJS environment
 	else
 		decompose = factory(); // raw script, assign to decompose global

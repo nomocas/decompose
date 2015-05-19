@@ -561,12 +561,12 @@ describe("compilation", function() {
 				return arg / 3;
 			});
 
-		var fn = func._compile();
+		var fn = func._forge();
 
 		func(12);
 
 		it("should", function() {
-			expect(fn).to.equal(func._compile());
+			expect(fn).to.equal(func._forge());
 		});
 	});
 
@@ -578,14 +578,14 @@ describe("compilation", function() {
 				return arg / 3;
 			});
 
-		var fn = func._compile();
+		var fn = func._forge();
 
 		func.before(function(arg) {
 			return arg + 10;
 		});
 
 		it("should", function() {
-			expect(fn).to.not.equal(func._compile());
+			expect(fn).to.not.equal(func._forge());
 		});
 	});
 
@@ -597,13 +597,13 @@ describe("compilation", function() {
 				return arg / 3;
 			});
 
-		var fn = func._compile();
+		var fn = func._forge();
 		func.after(function(arg) {
 			return arg + 10;
 		});
 
 		it("should", function() {
-			expect(fn).to.not.equal(func._compile());
+			expect(fn).to.not.equal(func._forge());
 		});
 	});
 
@@ -617,13 +617,13 @@ describe("compilation", function() {
 				};
 			});
 
-		var fn = func._compile();
+		var fn = func._forge();
 		func.before(function(arg) {
 			return arg + 10;
 		});
 
 		it("should", function() {
-			expect(fn).to.not.equal(func._compile());
+			expect(fn).to.not.equal(func._forge());
 		});
 	});
 });
