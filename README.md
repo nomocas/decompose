@@ -718,9 +718,8 @@ func(4); // return 14
 
 ### Advanced usage
 
-You should know that produced function is internaly compiled (forged) lazzily, and cached, on first call.
-Next calls will use cached function directly.
-Each time you modify the composition, the cached (forged) function is cleared and will be re-compiled on next call.
+You should know that any composition will forge the effective underlaying function lazzily on first call, and cache the result for further calls.
+Each time you modify a composition stack, the cached (forged) function is cleared and will be re-forged on next call.
 
 #### Hand Compilation
 
