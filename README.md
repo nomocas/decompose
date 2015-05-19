@@ -723,7 +723,7 @@ Each time you modify a composition stack, the cached (forged) function is cleare
 
 #### Hand Compilation
 
-If you want to force compilation and obtain the forged function directly (which is not a (de)composition anymore - i.e. no more chaining are allowed), simply invoke myComposition._compile();
+If you want to force compilation and obtain the forged function directly (which is not a (de)composition anymore - i.e. no more chaining are allowed), simply invoke myComposition._forge();
 
 ```javascript
 
@@ -734,7 +734,7 @@ var compo = decompose(function(){
 	// do something else
 });
 
-var forgedFunction = compo._compile();
+var forgedFunction = compo._forge();
 
 // allowed :
 forgedFunction();
