@@ -133,6 +133,7 @@
 				api[name] = method;
 				return this;
 			};
+			composer.api = api;
 			return composer;
 		};
 
@@ -168,8 +169,8 @@
 					return r;
 				if (r && typeof r.then === 'function') // promise/thenable signature
 					return r.then(function(r2) {
-						return manageAfter(r2, after, self, args);
-					});
+					return manageAfter(r2, after, self, args);
+				});
 				return manageAfter(r, after, self, args);
 			};
 		};
@@ -208,8 +209,7 @@
 				return function() {};
 			if (queue[0].type === 'around')
 				throw new Error("composition starting with 'around' : could not be compiled. aborting.");
-			var func = null,
-				len = queue.length;
+			var func = null;
 			queue.forEach(function(descriptor) {
 				var oldOne = null;
 				switch (descriptor.type) {
