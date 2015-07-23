@@ -19,7 +19,7 @@ gulp.task('jslint', function() {
 });
 //___________________________________________________
 gulp.task('serve-test', function() {
-    var server = gls.static("./test", 8287);
+    var server = gls.static(".", 8287);
     server.start();
     //live reload changed resource(s) 
     gulp.watch(['index.js', 'test/**/*.js'], server.notify);
