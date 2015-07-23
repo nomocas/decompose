@@ -771,6 +771,18 @@ You could use the provided "gulp web server" by entering :
 > gulp serve-test
 ```
 
+## Todo
+
+Introduce join-point : 
+
+```javascript
+var compo = decompose().joinPoint("myJoinPoint").after(/* func */).before(/* func */);
+
+compo = decompose.up(compo, decompose().after(/* func */, "myJointPoint"));
+
+//...
+```
+
 ## Licence
 
 The [MIT](http://opensource.org/licenses/MIT) License
