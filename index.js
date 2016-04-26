@@ -30,7 +30,7 @@
                 return closure.forged.apply(this, arguments);
             };
 
-            composition._deep_compiler_ = true;
+            composition._ubee_compiler_ = true;
             composition.__composition__ = true;
 
             //______________________________  protected API (usable if you know what you're doing ;)
@@ -141,7 +141,7 @@
         //_________________________________________________ Local functions
 
         var manageAfter = function(r, after, self, args) {
-            if (after._deep_ocm_)
+            if (after._ocm_)
                 after = after();
             if (!after) // ocm could return null or undefined
                 return r;
@@ -162,7 +162,7 @@
                     before = bef, // need to keep bef and aft reference between call for ocm management
                     after = aft,
                     args = arguments;
-                if (before._deep_ocm_)
+                if (before._ocm_)
                     before = before();
                 if (before) // ocm could return null or undefined. if so : skip.
                     r = before.apply(this, args);
@@ -178,7 +178,7 @@
 
         function fail(oldOne, self, args, fn) {
             var res = null;
-            if (fn._deep_ocm_)
+            if (fn._ocm_)
                 fn = fn();
             try {
                 res = oldOne.apply(self, args); // oldOne could return an error or not
