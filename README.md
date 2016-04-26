@@ -385,7 +385,7 @@ var obj2 = {
 // both obj and obj2 are workable instance.
 // But as obj contains (de)compositions, it could be used as model for other objects.
 function extendsObjectWithObject(object, model){
-	// (if you want tools that do that nicely for you (and manymore) you should try deep-compiler)
+	// (if you want tools that do that nicely for you (and manymore) you should try [ubee](https://github.com/nomocas/ubee))
 	for(var i in model)
 		object[i] = decompose.up(object[i], model[i]);
 }
